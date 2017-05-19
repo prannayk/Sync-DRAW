@@ -6,9 +6,9 @@ import numpy as np
 import random
 from random import randint
 np.random.seed(np.random.randint(1<<30))
-
+import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data("../../videogan/MNIST_data/", one_hot=True)
+mnist = input_data.read_data_sets("../../videogan/MNIST_data/", one_hot=True)
 
 num_frames = 10
 seq_length = 10
@@ -148,9 +148,16 @@ def create_gifs_for_data(dataset, data, labels, num):
     digits2 = dataset / 10
     digits = np.concatenate([digits1, digits2])
     motion_values = dataset / 100
+    count = 0
     while outer_index < num:
-
+        count += 1
+        print(count)
+	print(outer_index)
+        if count > 100:
+            break
         idxs = np.random.randint(data.shape[0], size = num_digits)
+        print(idxs)
+        print(idxs.shape) 
         if labels[idxs[0]] in digits and labels[idxs[1]] in digits:
             n = 10*labels[idxs[0]] + labels[idxs[1]]
             motion_list = np.where(inner_digits == n)[0]
@@ -171,6 +178,8 @@ def create_gifs_for_data(dataset, data, labels, num):
 
         if outer_index == 10:
             break
+    print(digits1.shape)
+    print(digits2.shape) 
     return final_gif_data, captions, counts_of_sentences
 
 train_data = mnist.train.images.reshape(-1,28,28)
@@ -184,12 +193,17 @@ labels = np.concatenate((train_labels,val_labels), axis = 0)
 train, val = create_dataset()
 
 train, val = create_dataset()
-# print train, val
-data_train, captions_train, count_train = create_gifs_for_data(train, data, labels, 50000)
-data_val, captions_val, count_val = create_gifs_for_data(val, data, labels, 2000)
+#data_train, captions_train, count_train = create_gifs_for_data(train, data, labels, 100)
+#data_val, captions_val, count_val = create_gifs_for_data(val, data, labels, 2000)
 
-print(data_train.shape)
-print(captions_train[0])
-print(count_train)
+print( train)
+print( val)
+print(create_gif(train_data,[0,0]).shape)
+print(tf.reduce_mean(create_gif(train_data,[0,0])))
+
+#print(data_train.shape)
+#print(captions_train[0])
+#print(count_train)
 
 exit()
+

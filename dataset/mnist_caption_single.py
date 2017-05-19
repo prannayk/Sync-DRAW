@@ -215,6 +215,7 @@ val_labels = f['validation_labels'].value
 f.close()
 
 data = np.concatenate((train_data,val_data), axis = 0)
+print(data.shape)
 labels = np.concatenate((train_labels,val_labels), axis = 0)
 
 train,val = create_dataset()
