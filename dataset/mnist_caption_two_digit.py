@@ -1,16 +1,14 @@
 import h5py
 import numpy as np
-# import pylab
 import datetime
 import scipy
-# from scipy.misc import toimage
 import numpy as np
 import random
 from random import randint
 np.random.seed(np.random.randint(1<<30))
 
-
-
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data("../../videogan/MNIST_data/", one_hot=True)
 
 num_frames = 10
 seq_length = 10
@@ -158,9 +156,6 @@ def create_gifs_for_data(dataset, data, labels, num):
             motion_list = np.where(inner_digits == n)[0]
             random.shuffle(motion_list)
             motion_idx = motion_idxs[motion_values[motion_list[0]]]
-#            print motion_strings[motion_idx[0]]
-#            motion1 == motion_strings[motion_idx[0]]
-#            motion2 == motion_strings[motion_idx[1]]
 
             digit = data[idxs]
             dummy = create_gif(digit, motion_idx)
@@ -178,12 +173,10 @@ def create_gifs_for_data(dataset, data, labels, num):
             break
     return final_gif_data, captions, counts_of_sentences
 
-f = h5py.File('mnist.h5')
-train_data = f['train'].value.reshape(-1, 28, 28)
-train_labels = f['train_labels'].value
-val_data = f['validation'].value.reshape(-1,28,28)
-val_labels = f['validation_labels'].value
-f.close()
+train_data = mnist.train.images.reshape(-1,28,28)
+train_labels = mnist.train.labels
+val_data = mnist.validation.images.reshape(-1,28,28)
+val_labels = mnist.validation.labels
 
 data = np.concatenate((train_data,val_data), axis = 0)
 labels = np.concatenate((train_labels,val_labels), axis = 0)
@@ -192,20 +185,11 @@ train, val = create_dataset()
 
 train, val = create_dataset()
 # print train, val
-data_train, captions_train, count_train = create_gifs_for_data(train, data, labels, 10000)
+data_train, captions_train, count_train = create_gifs_for_data(train, data, labels, 50000)
 data_val, captions_val, count_val = create_gifs_for_data(val, data, labels, 2000)
 
+print(data_train.shape)
+print(captions_train[0])
+print(count_train)
 
-with h5py.File('mnist_two_gif.h5','w') as hf:
-    # final_gif_data,captions,counts_of_sentences = create_gifs_for_data(data,labels)
-    hf.create_dataset('mnist_gif_train', data=data_train)
-    hf.create_dataset('mnist_captions_train', data=captions_train)
-    hf.create_dataset('mnist_count_train', data=count_train)
-    hf.create_dataset('mnist_dataset_train', data=train)
-
-    hf.create_dataset('mnist_gif_val', data=data_val)
-    hf.create_dataset('mnist_captions_val', data=captions_val)
-    hf.create_dataset('mnist_count_val', data=count_val)
-    hf.create_dataset('mnist_dataset_val', data=val)
-
-
+exit()
